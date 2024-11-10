@@ -21,10 +21,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadNotes() async {
+    // Fetch existing notes from the database
     final loadedNotes = await DatabaseHelper.instance.getNotes();
-    setState(() {
-      notes = loadedNotes;
-    });
+
+    // If no notes are found, insert a default welcome note
+    if (loadedNotes.isEmpty) {
+      await DatabaseHelper.instance.insertNote(
+        Note(
+          title: 'Welcome to My Simple Note!',
+          description:
+              'Capture Your Thoughts and Ideas. Start by Creating a Note !!',
+        ),
+      );
+
+      // Reload notes after inserting the default note
+      notes = await DatabaseHelper.instance.getNotes();
+    } else {
+      notes = loadedNotes; // Load the existing notes if they are present
+    }
+
+    setState(() {}); // Update the UI with the fetched notes
   }
 
   @override
